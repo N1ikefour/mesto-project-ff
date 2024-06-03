@@ -1,45 +1,23 @@
 import './index.css';
 import {initialCards} from './cards'
+import { createCard, onDelete, handleHeartClick} from './components/card';
+import {closePopupByEsc, closeCurrentPopupByOverlay, openPopup, closePopup} from './components/modal'
+// import {closePopupByEsc} from './components/modal.js'
 // @todo: Темплейт карточки
-const cardTemplate = document.querySelector('#card-template').content;
+
 // @todo: DOM узлы
 const content = document.querySelector('.content');
 const cardsContainer = content.querySelector('.places__list');
-// const profileEditButton = document.querySelector('.profile__edit-button')
-// @todo: Функция создания карточки
 
 
-const cardAdd = (cardData, onDelete, onHeart, onImageClick) => {
-  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
-  const heart = cardElement.querySelector('.card__like-button');
-  heart.onclick = onHeart
 
-  const cardImage = cardElement.querySelector('.card__image')
-  cardImage.onclick = onImageClick
-  cardElement.querySelector('.card__title').textContent = cardData.name;
-  cardElement.querySelector('.card__image').src = cardData.link;
-  cardElement.querySelector('.card__image').alt = cardData.name;
-
-  const deleteButton = cardElement.querySelector('.card__delete-button');
-  deleteButton.addEventListener('click', () => {
-    onDelete(cardElement);
-  })
-  return cardElement;
-  
-}
-
-function handleHeartClick (evt) {
-  evt.target.classList.toggle('card__like-button_is-active')
-}
 // @todo: Функция удаления карточки
-function onDelete (deleteCard) {
-  deleteCard.remove();
-}
+
 // @todo: Вывести карточки на страницу
 
 function outputInitialCards (cards) {
   cards.forEach((data) =>{
-    const card = cardAdd(data, onDelete, handleHeartClick, handleOnImageClick);
+    const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick);
     cardsContainer.append(card)
   })
 }
@@ -63,31 +41,16 @@ const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 
 
-const closePopup = function (popup) {
-  popup.classList.remove("popup_is-opened");
-  console.log(popup)
-}
-function openPopup(popup) {
-  popup.classList.add('popup_is-animated');  
-  popup.classList.add("popup_is-opened")
 
-  function closeCurrentPopup() {
-    closePopup(popup)
-  }
-  function closeCurrentPopupByOverlay(evt) {
-    if (evt.currentTarget === evt.target)
-    closePopup(popup)
-  }
-  popup.addEventListener("click", closeCurrentPopupByOverlay);
-  [...document.querySelectorAll(".popup__close")].forEach(elem => elem.addEventListener("click", closeCurrentPopup))
+[...document.querySelectorAll(".popup__close")].forEach(elem => elem.addEventListener("click", evt=>{
+  closePopup(evt.currentTarget)
+}))
 
+document.addEventListener('keydown', closePopupByEsc);
+[...document.querySelectorAll('.popup')].forEach(elem => elem.addEventListener('click',closeCurrentPopupByOverlay))
 
-  document.addEventListener('keydown', function (evt) {
-    if (evt.key === "Escape") {
-      closePopup(popup);
-    }
-  });
-}
+  
+
 
 profileEditButton.addEventListener("click", ()=>{
   openPopup(popupTypeEdit);
@@ -103,7 +66,7 @@ profileAddButton.addEventListener("click", ()=> {
 
 
 
-function handleFormSubmit(evt) {
+function handleFormEditSubmit(evt) {
   evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
                                               // Так мы можем определить свою логику отправки.
                                               // О том, как это делать, расскажем позже.
@@ -121,12 +84,12 @@ function handleFormSubmit(evt) {
   // closeCurrentPopup()
   nameInput.value = null;
   jobInput.value = null;
-  closePopup(evt.target.closest(".popup"))
+  closePopup(popupTypeEdit)
 }
 
 // Прикрепляем обработчик к форме:
 // он будет следить за событием “submit” - «отправка»
-formElement.addEventListener('submit', handleFormSubmit);
+formElement.addEventListener('submit', handleFormEditSubmit);
 formElementNew.addEventListener('submit', handleFormNewSubmit);
 
 
@@ -142,7 +105,7 @@ function handleFormNewSubmit (evt) {
     link: linkInput.value
   }
 
-  const card = cardAdd(data, onDelete, handleHeartClick, handleOnImageClick);
+  const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick);
   cardsContainer.insertBefore(card, cardsContainer.firstChild)
   newNameInput.value = null;
   linkInput.value = null;

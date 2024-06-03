@@ -1,7 +1,9 @@
- export const cardAdd = (cardData, onDelete, onHeart, onImageClick) => {
+ export const createCard = (cardData, onDelete, onHeart, onImageClick) => {
+  const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
   const heart = cardElement.querySelector('.card__like-button');
-  heart.onclick = onHeart
+
+  heart.addEventListener('click', onHeart);
 
   const cardImage = cardElement.querySelector('.card__image')
   cardImage.onclick = onImageClick
@@ -24,13 +26,3 @@ export function handleHeartClick (evt) {
 export function onDelete (deleteCard) {
   deleteCard.remove();
 }
-// @todo: Вывести карточки на страницу
-
- export function outputInitialCards (cards) {
-  cards.forEach((data) =>{
-    const card = cardAdd(data, onDelete, handleHeartClick, handleOnImageClick);
-    cardsContainer.append(card)
-  })
-}
-
-// outputInitialCards(initialCards)
