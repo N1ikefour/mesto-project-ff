@@ -46,8 +46,6 @@ const profileDescription = document.querySelector('.profile__description');
   closePopup(evt.currentTarget)
 }))
 
-document.addEventListener('keydown', closePopupByEsc);
-[...document.querySelectorAll('.popup')].forEach(elem => elem.addEventListener('click',closeCurrentPopupByOverlay))
 
   
 
