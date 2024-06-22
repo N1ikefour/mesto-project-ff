@@ -1,3 +1,5 @@
+  import {config, deleteCardServ, likecard} from './api';
+ export const id = {id:null}
  export const createCard = (cardData, onDelete, onHeart, onImageClick) => {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
@@ -10,6 +12,12 @@
   cardElement.querySelector('.card__title').textContent = cardData.name;
   cardElement.querySelector('.card__image').src = cardData.link;
   cardElement.querySelector('.card__image').alt = cardData.name;
+  cardElement.querySelector('.likes').textContent = cardData.likes.length;
+  cardElement.dataset.id = cardData._id;
+
+  if (id.id !== cardData.owner._id) {
+    cardElement.querySelector('.card__delete-button').hidden = true;
+  }
 
   const deleteButton = cardElement.querySelector('.card__delete-button');
   deleteButton.addEventListener('click', () => {
@@ -21,8 +29,15 @@
 
 export function handleHeartClick (evt) {
   evt.target.classList.toggle('card__like-button_is-active')
+  if (evt.target.classList.contains('card__like-button_is-active')) {
+    likecard(evt.target.closest('.places__item').dataset.id,"PUT")
+  }
+  else likecard(evt.target.closest('.places__item').dataset.id,"DELETE")
 }
 // @todo: Функция удаления карточки
 export function onDelete (deleteCard) {
   deleteCard.remove();
+  deleteCardServ(deleteCard.dataset.id)
 }
+
+

@@ -1,7 +1,9 @@
 import './index.css';
-import {initialCards} from './cards'
+import {id} from './components/card'
 import { createCard, onDelete, handleHeartClick} from './components/card';
-import {closePopupByEsc, closeCurrentPopupByOverlay, openPopup, closePopup} from './components/modal'
+import {closePopupByEsc, closeCurrentPopupByOverlay, openPopup, closePopup} from './components/modal';
+import {showInputError, hideInputError, isValid, setEventListeners, enableValidation, hasInvalidInput, toggleButtonState, clearValidation} from './components/validation';
+import {cardsserv, meinfo, cards, Editprofile, addcard, Editavatar} from './components/api';
 // import {closePopupByEsc} from './components/modal.js'
 // @todo: Темплейт карточки
 
@@ -22,7 +24,7 @@ function outputInitialCards (cards) {
   })
 }
 
-outputInitialCards(initialCards);
+// outputInitialCards(initialCards);
 
 
 
@@ -35,20 +37,23 @@ const popupTypeNew = document.querySelector('.popup_type_new-card')
 const profileAddButton = document.querySelector('.profile__add-button')
 const formElement = document.forms["edit-profile"];
 const formElementNew = document.forms["new-place"]
+const formElementAvatar = document.forms["avatar"]
 const nameInput = formElement.querySelector('.popup__input_type_name');
 const jobInput = formElement.querySelector('.popup__input_type_description');
 const profileTitle = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
-
-
+const avatar = document.querySelector('.profile__image');
+const popupTypeNewAvatar = document.querySelector('.popup_type_new-avatar');
 
 [...document.querySelectorAll(".popup__close")].forEach(elem => elem.addEventListener("click", evt=>{
-  closePopup(evt.currentTarget)
+  closePopup(evt.target.closest(".popup"))
 }))
 
 
-  
 
+avatar.addEventListener("click", () =>{
+  openPopup(popupTypeNewAvatar)
+})
 
 profileEditButton.addEventListener("click", ()=>{
   openPopup(popupTypeEdit);
@@ -58,6 +63,7 @@ profileEditButton.addEventListener("click", ()=>{
 
 profileAddButton.addEventListener("click", ()=> {
   openPopup(popupTypeNew)
+
 })
  
 
@@ -83,13 +89,14 @@ function handleFormEditSubmit(evt) {
   nameInput.value = null;
   jobInput.value = null;
   closePopup(popupTypeEdit)
+  Editprofile(nameValue, jobValue)
 }
 
 // Прикрепляем обработчик к форме:
 // он будет следить за событием “submit” - «отправка»
 formElement.addEventListener('submit', handleFormEditSubmit);
 formElementNew.addEventListener('submit', handleFormNewSubmit);
-
+formElementAvatar.addEventListener('submit', handleFormNewavatar)
 
 
 function handleFormNewSubmit (evt) {
@@ -97,10 +104,11 @@ function handleFormNewSubmit (evt) {
 
   const newNameInput = document.querySelector('.popup__input_type_card-name')
   const linkInput = document.querySelector(".popup__input_type_url")
-  
+  const name = newNameInput.value;
+  const link = linkInput.value;
   const data = {
-    name: newNameInput.value,
-    link: linkInput.value
+    name: name,
+    link: link
   }
 
   const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick);
@@ -108,6 +116,21 @@ function handleFormNewSubmit (evt) {
   newNameInput.value = null;
   linkInput.value = null;
   closePopup(evt.target.closest(".popup"))
+  addcard(name, link)
+}
+
+function handleFormNewavatar (evt) {
+  evt.preventDefault();
+  const linkInput = document.querySelector(".avatar_link")
+  const link = linkInput.value;
+  const data = {
+    link: link
+  }
+
+  avatar.style.backgroundImage = `url(${link})`;
+  linkInput.value = null;
+  closePopup(evt.target.closest(".popup"))
+  Editavatar(link)
 }
 
 
@@ -124,13 +147,45 @@ function handleOnImageClick (evt) {
 }
 
 
+enableValidation({
+  formSelector: '.popup__form',
+  inputSelector: '.popup__input',
+  submitButtonSelector: '.popup__button',
+  inactiveButtonClass: 'popup__button_disabled',
+  inputErrorClass: 'popup__input_type_error',
+  errorClass: 'popup__error_visible'
+}); 
+
+function updateHeader (data) {
+  avatar.style.backgroundImage = `url(${data.avatar})`;
+  profileTitle.textContent = data.name;
+  profileDescription.textContent = data.about;
+  id.id = data._id
+}
+
+Promise.all([
+  meinfo(),
+  cards(),
+])
+.then (([medata, carddata ]) => {
+  updateHeader(medata)
+  outputInitialCards(carddata)
+})
+
+
+
+
+
 
 
  
 
 
- 
 
 
 
 
+// .then ((res) => {
+//   console.log('cards', res)
+//   outputInitialCards(res)
+// }) 

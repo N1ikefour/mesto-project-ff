@@ -9,6 +9,7 @@ export function openPopup(popup) {
   document.addEventListener('keydown', closePopupByEsc);
 }
 
+
 export function closeCurrentPopupByOverlay(evt) {
   if (evt.currentTarget === evt.target)
   closePopup(evt.currentTarget)
