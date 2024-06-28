@@ -1,10 +1,7 @@
 
 
-  const profileTitle = document.querySelector('.profile__title');
-  const profileDescription = document.querySelector('.profile__description');
-  const avatar = document.querySelector('.profile__image');
 
-  export const config = {
+  const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-16',
   headers: {
     authorization: '3ec1fb29-0e21-48db-8dd8-95c411f1acd1',
@@ -32,7 +29,7 @@
 // }
   
 
-export function meinfo () {
+export function meInfo () {
   return fetch(`${config.baseUrl}/users/me`, {
     headers: config.headers
 })
@@ -42,12 +39,6 @@ export function meinfo () {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
-}
-
-function updateHeader (data) {
-  avatar.style.backgroundImage = `url(${data.avatar})`;
-  profileTitle.textContent = data.name;
-  profileDescription.textContent = data.about;
 }
 
 export const cards = () => {

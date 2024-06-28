@@ -1,43 +1,45 @@
-  import {config, deleteCardServ, likecard} from './api';
- export const id = {id:null}
- export const createCard = (cardData, onDelete, onHeart, onImageClick) => {
+  import {deleteCardServ, likecard} from './api';
+ export const createCard = (cardData, onDelete, onHeart, onImageClick, userId) => {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
   const heart = cardElement.querySelector('.card__like-button');
 
-  heart.addEventListener('click', onHeart);
+  heart.addEventListener('click',  (evt) => onHeart(evt, cardData._id));
 
   const cardImage = cardElement.querySelector('.card__image')
-  cardImage.onclick = onImageClick
+  cardImage.addEventListener("click", (evt) => onImageClick(evt))
   cardElement.querySelector('.card__title').textContent = cardData.name;
   cardElement.querySelector('.card__image').src = cardData.link;
   cardElement.querySelector('.card__image').alt = cardData.name;
   cardElement.querySelector('.likes').textContent = cardData.likes.length;
-  cardElement.dataset.id = cardData._id;
 
-  if (id.id !== cardData.owner._id) {
+  if (userId !== cardData.owner._id) {
     cardElement.querySelector('.card__delete-button').hidden = true;
   }
-
+  else {
   const deleteButton = cardElement.querySelector('.card__delete-button');
   deleteButton.addEventListener('click', () => {
-    onDelete(cardElement);
+    onDelete(cardElement, cardData._id);
   })
+  }
   return cardElement;
   
 }
 
-export function handleHeartClick (evt) {
-  evt.target.classList.toggle('card__like-button_is-active')
-  if (evt.target.classList.contains('card__like-button_is-active')) {
-    likecard(evt.target.closest('.places__item').dataset.id,"PUT")
-  }
-  else likecard(evt.target.closest('.places__item').dataset.id,"DELETE")
+export function handleHeartClick (evt, _id) {
+  let method;
+  if (evt.target.classList.contains('card__like-button_is-active'))
+    method = "DELETE"
+    else
+    method = "PUT"
+  likecard(_id, method)
+  .then(() => evt.target.classList.toggle('card__like-button_is-active'))
+  .catch (error => console.error(error))
 }
 // @todo: Функция удаления карточки
-export function onDelete (deleteCard) {
-  deleteCard.remove();
-  deleteCardServ(deleteCard.dataset.id)
+export function onDelete (deleteCard, cardId) {
+  deleteCardServ(cardId).then( () => deleteCard.remove())
+  .catch (error => console.error(error))
 }
 
 

@@ -1,9 +1,9 @@
 import './index.css';
 import {id} from './components/card'
 import { createCard, onDelete, handleHeartClick} from './components/card';
-import {closePopupByEsc, closeCurrentPopupByOverlay, openPopup, closePopup} from './components/modal';
-import {showInputError, hideInputError, isValid, setEventListeners, enableValidation, hasInvalidInput, toggleButtonState, clearValidation} from './components/validation';
-import {cardsserv, meinfo, cards, Editprofile, addcard, Editavatar} from './components/api';
+import { closeCurrentPopupByOverlay, openPopup, closePopup} from './components/modal';
+import {showInputError, isValid, setEventListeners, enableValidation, hasInvalidInput, toggleButtonState, clearValidation} from './components/validation';
+import {cardsserv, meInfo, cards, Editprofile, addcard, Editavatar} from './components/api';
 // import {closePopupByEsc} from './components/modal.js'
 // @todo: Темплейт карточки
 
@@ -11,7 +11,14 @@ import {cardsserv, meinfo, cards, Editprofile, addcard, Editavatar} from './comp
 const content = document.querySelector('.content');
 const cardsContainer = content.querySelector('.places__list');
 
-
+const validationConfig = {
+  formSelector: ".popup__form",
+  inputSelector: ".popup__input",
+  submitButtonSelector: ".popup__button",
+  inactiveButtonClass: "popup__button_disabled",
+  inputErrorClass: "popup__input_type_error",
+  errorClass: "popup__error_visible",
+};
 
 // @todo: Функция удаления карточки
 
@@ -24,10 +31,11 @@ function outputInitialCards (cards) {
   })
 }
 
+
 // outputInitialCards(initialCards);
 
 
-
+let userId
 const profileEditButton = document.querySelector('.profile__edit-button')
 const popupTypeEdit = document.querySelector('.popup_type_edit')
 const popupTypeImage = document.querySelector ('.popup_type_image')
@@ -45,9 +53,10 @@ const profileDescription = document.querySelector('.profile__description');
 const avatar = document.querySelector('.profile__image');
 const popupTypeNewAvatar = document.querySelector('.popup_type_new-avatar');
 
-[...document.querySelectorAll(".popup__close")].forEach(elem => elem.addEventListener("click", evt=>{
-  closePopup(evt.target.closest(".popup"))
+[...document.querySelectorAll(".popup__close, .popup")].forEach(elem => elem.addEventListener("click", evt=>{
+  closePopup(evt.target.closest(".popup"), validationConfig)
 }))
+
 
 
 
@@ -88,7 +97,7 @@ function handleFormEditSubmit(evt) {
   // closeCurrentPopup()
   nameInput.value = null;
   jobInput.value = null;
-  closePopup(popupTypeEdit)
+  closePopup(popupTypeEdit, validationConfig)
   Editprofile(nameValue, jobValue)
 }
 
@@ -115,7 +124,7 @@ function handleFormNewSubmit (evt) {
   cardsContainer.insertBefore(card, cardsContainer.firstChild)
   newNameInput.value = null;
   linkInput.value = null;
-  closePopup(evt.target.closest(".popup"))
+  closePopup(evt.target.closest(".popup"), validationConfig)
   addcard(name, link)
 }
 
@@ -129,7 +138,7 @@ function handleFormNewavatar (evt) {
 
   avatar.style.backgroundImage = `url(${link})`;
   linkInput.value = null;
-  closePopup(evt.target.closest(".popup"))
+  closePopup(evt.target.closest(".popup"), validationConfig)
   Editavatar(link)
 }
 
@@ -146,33 +155,26 @@ function handleOnImageClick (evt) {
   popupTypeImageP.textContent = nameCardDesc
 }
 
-
-enableValidation({
-  formSelector: '.popup__form',
-  inputSelector: '.popup__input',
-  submitButtonSelector: '.popup__button',
-  inactiveButtonClass: 'popup__button_disabled',
-  inputErrorClass: 'popup__input_type_error',
-  errorClass: 'popup__error_visible'
-}); 
+  enableValidation(validationConfig); 
 
 function updateHeader (data) {
   avatar.style.backgroundImage = `url(${data.avatar})`;
   profileTitle.textContent = data.name;
   profileDescription.textContent = data.about;
-  id.id = data._id
 }
 
 Promise.all([
-  meinfo(),
+  meInfo(),
   cards(),
 ])
 .then (([medata, carddata ]) => {
+  userId = medata._id
   updateHeader(medata)
   outputInitialCards(carddata)
 })
 
 
+// Editavatar();
 
 
 

@@ -29,9 +29,9 @@
   };
   
 
-  export const setEventListeners = (formElement) => {
-    const inputList = Array.from(formElement.querySelectorAll('.popup__input'));
-    const buttonElement = formElement.querySelector('.popup__button');
+  export const setEventListeners = (formElement, validationConfig) => {
+    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+    const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
     inputList.forEach((inputElement) => {
       inputElement.addEventListener('input', () => {
         isValid(formElement, inputElement)
@@ -40,17 +40,17 @@
     });
   }; 
   
-  export const enableValidation = () => {
-    const formList = Array.from(document.querySelectorAll('.popup__form'));
+  export const enableValidation = (validationConfig) => {
+    const formList = Array.from(document.querySelectorAll(validationConfig.formSelector));
     // Переберём полученную коллекцию
     formList.forEach((formElement) => {
       // Для каждой формы вызовем функцию setEventListeners,
       // передав ей элемент формы
-      setEventListeners(formElement);
+      setEventListeners(formElement, validationConfig);
     });
   };
 
-  export const hasInvalidInput = (inputList) => {
+   const hasInvalidInput = (inputList) => {
     return inputList.some((inputElement) => {
       return !inputElement.validity.valid;
     })
@@ -69,8 +69,10 @@
     }
   }; 
   
-  // export function clearValidation(formElement) {
-  //   // Очистка ошибок валидации
-  //   hideInputError(formElement, inputElement);
-  //   toggleButtonState(inputList, buttonElement);
-  // }
+  export function clearValidation(formElement, validationConfig) {
+    // Очистка ошибок валидации
+    const inputList = formElement.querySelectorAll(validationConfig.inputSelector)
+    const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector)
+    Array.from(inputList).forEach(input => hideInputError(formElement, input))
+    toggleButtonState(inputList, buttonElement);
+  }
