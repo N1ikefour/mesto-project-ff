@@ -1,16 +1,17 @@
 import {clearValidation} from "./validation"
+
 export const closePopup = function (popup, validationConfig) {
-  console.log(popup, popup.querySelector(validationConfig.formSelector))
   const form = popup.querySelector(validationConfig.formSelector)
   popup.classList.remove("popup_is-opened");
-  console.log(popup)
   document.removeEventListener('keydown', closePopupByEsc);
-  clearValidation(form, validationConfig)
+  if (form)
+    clearValidation(form, validationConfig)
 }
-export function openPopup(popup) {
+
+export function openPopup(popup, validationConfig) {
   popup.classList.add('popup_is-animated');  
   popup.classList.add("popup_is-opened")
-  document.addEventListener('keydown', closePopupByEsc);
+  document.addEventListener('keydown', (evt) => closePopupByEsc(evt, validationConfig));
 }
 
 
@@ -19,14 +20,16 @@ export function closeCurrentPopupByOverlay(evt) {
   closePopup(evt.currentTarget)
 }
 
- function closePopupByEsc(evt) {
+ function closePopupByEsc(evt, validationConfig) {
   if (evt.key === "Escape") {
     const openedPopup = document.querySelector('.popup_is-opened');
     if (openedPopup) {
-      closePopup(openedPopup);
+      closePopup(openedPopup, validationConfig);
     }
   }
 }
+
+
 
 
 

@@ -71,8 +71,8 @@
   
   export function clearValidation(formElement, validationConfig) {
     // Очистка ошибок валидации
-    const inputList = formElement.querySelectorAll(validationConfig.inputSelector)
+    const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector))
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector)
-    Array.from(inputList).forEach(input => hideInputError(formElement, input))
+    inputList.forEach(input => hideInputError(formElement, input))
     toggleButtonState(inputList, buttonElement);
   }

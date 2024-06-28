@@ -26,7 +26,7 @@ const validationConfig = {
 
 function outputInitialCards (cards) {
   cards.forEach((data) =>{
-    const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick);
+    const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick, userId);
     cardsContainer.append(card)
   })
 }
@@ -53,25 +53,28 @@ const profileDescription = document.querySelector('.profile__description');
 const avatar = document.querySelector('.profile__image');
 const popupTypeNewAvatar = document.querySelector('.popup_type_new-avatar');
 
-[...document.querySelectorAll(".popup__close, .popup")].forEach(elem => elem.addEventListener("click", evt=>{
+[...document.querySelectorAll(".popup__close")].forEach(elem => elem.addEventListener("click", evt=>{
   closePopup(evt.target.closest(".popup"), validationConfig)
+}));
+
+[...document.querySelectorAll('.popup')].forEach(elem => elem.addEventListener("mousedown", evt => {
+  if (evt.target === elem)
+    closePopup(evt.target.closest(".popup"), validationConfig)
 }))
 
 
-
-
 avatar.addEventListener("click", () =>{
-  openPopup(popupTypeNewAvatar)
+  openPopup(popupTypeNewAvatar, validationConfig)
 })
 
 profileEditButton.addEventListener("click", ()=>{
-  openPopup(popupTypeEdit);
+  openPopup(popupTypeEdit, validationConfig);
     nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
 })
 
 profileAddButton.addEventListener("click", ()=> {
-  openPopup(popupTypeNew)
+  openPopup(popupTypeNew, validationConfig)
 
 })
  
@@ -83,22 +86,27 @@ function handleFormEditSubmit(evt) {
   evt.preventDefault(); // Эта строчка отменяет стандартную отправку формы.
                                               // Так мы можем определить свою логику отправки.
                                               // О том, как это делать, расскажем позже.
-
   // Получите значение полей jobInput и nameInput из свойства value
   const nameValue = nameInput.value;
   const jobValue = jobInput.value
-
-  // Выберите элементы, куда должны быть вставлены значения полей
-  const profileTitle = document.querySelector('.profile__title');
-  const profileDescription = document.querySelector('.profile__description');
-  // Вставьте новые значения с помощью textContent
-  profileTitle.textContent = nameValue;
-  profileDescription.textContent = jobValue;
-  // closeCurrentPopup()
-  nameInput.value = null;
-  jobInput.value = null;
-  closePopup(popupTypeEdit, validationConfig)
+  const button = evt.target.querySelector('.button');
+  button.textContent = 'Сохранение...';
   Editprofile(nameValue, jobValue)
+    .then(data => {
+      // Выберите элементы, куда должны быть вставлены значения полей
+      const profileTitle = document.querySelector('.profile__title');
+      const profileDescription = document.querySelector('.profile__description');
+      // Вставьте новые значения с помощью textContent
+      profileTitle.textContent = nameValue;
+      profileDescription.textContent = jobValue;
+      // closeCurrentPopup()
+      nameInput.value = null;
+      jobInput.value = null;
+      closePopup(popupTypeEdit, validationConfig)
+    })
+    .finally(()=> {
+      button.textContent = 'Сохранить'
+    })
 }
 
 // Прикрепляем обработчик к форме:
@@ -119,13 +127,20 @@ function handleFormNewSubmit (evt) {
     name: name,
     link: link
   }
+  const button = evt.target.querySelector('.button');
+  button.textContent = 'Сохранение...';
 
-  const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick);
-  cardsContainer.insertBefore(card, cardsContainer.firstChild)
-  newNameInput.value = null;
-  linkInput.value = null;
-  closePopup(evt.target.closest(".popup"), validationConfig)
   addcard(name, link)
+    .then(data => {
+        const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick, userId);
+        cardsContainer.insertBefore(card, cardsContainer.firstChild)
+        newNameInput.value = null;
+        linkInput.value = null;
+        closePopup(evt.target.closest(".popup"), validationConfig)
+    })
+    .finally(()=> {
+      button.textContent = 'Сохранить'
+    })
 }
 
 function handleFormNewavatar (evt) {
@@ -135,22 +150,26 @@ function handleFormNewavatar (evt) {
   const data = {
     link: link
   }
-
-  avatar.style.backgroundImage = `url(${link})`;
-  linkInput.value = null;
-  closePopup(evt.target.closest(".popup"), validationConfig)
+  const button = evt.target.querySelector('.button');
+  button.textContent = 'Сохранение...';
   Editavatar(link)
+    .then((data) => {
+      avatar.style.backgroundImage = `url(${link})`;
+      linkInput.value = null;
+      closePopup(evt.target.closest(".popup"), validationConfig)
+    })
+    .finally(()=> {
+      button.textContent = 'Сохранить'
+    })
 }
 
 
 
-function handleOnImageClick (evt) {
-  const image = evt.target;
-  const namecard = image.closest('li').querySelector('.card__title');
-  const imageLink = image.src;
-  const nameCardDesc = namecard.textContent;
+function handleOnImageClick (link, name) {
+  const imageLink = link;
+  const nameCardDesc = name;
 
-  openPopup(popupTypeImage)
+  openPopup(popupTypeImage, validationConfig)
   popupTypeImageImg.src = imageLink;
   popupTypeImageP.textContent = nameCardDesc
 }
@@ -163,31 +182,13 @@ function updateHeader (data) {
   profileDescription.textContent = data.about;
 }
 
-Promise.all([
-  meInfo(),
-  cards(),
-])
-.then (([medata, carddata ]) => {
-  userId = medata._id
-  updateHeader(medata)
-  outputInitialCards(carddata)
-})
+meInfo()
+  .then((medata) => {
+    userId = medata._id
+    updateHeader(medata)
 
-
-// Editavatar();
-
-
-
-
-
- 
-
-
-
-
-
-
-// .then ((res) => {
-//   console.log('cards', res)
-//   outputInitialCards(res)
-// }) 
+    cards()
+      .then(carddata => outputInitialCards(carddata))
+      .catch(error => console.error(error))
+  })
+  .catch(error => console.error(error))

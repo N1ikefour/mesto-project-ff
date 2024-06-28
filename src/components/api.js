@@ -1,32 +1,13 @@
 
 
 
-  const config = {
+const config = {
   baseUrl: 'https://nomoreparties.co/v1/wff-cohort-16',
   headers: {
     authorization: '3ec1fb29-0e21-48db-8dd8-95c411f1acd1',
     'Content-Type': 'application/json'
   }
 }
-
-
-
-// export function cardsserv () {
-//   return fetch(`${config.baseUrl}/cards`, {
-//     headers: config.headers
-//   })
-//   .then(res => {
-//     if (res.ok) {
-//      return res.json();
-//     }
-
-//     return Promise.reject(`Ошибка: ${res.status}`);
-//   })
-//   .then ((res) => {
-//     console.log('cardserv', res)
-//   })
-  
-// }
   
 
 export function meInfo () {
@@ -39,6 +20,11 @@ export function meInfo () {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 export const cards = () => {
@@ -51,12 +37,17 @@ export const cards = () => {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 
 
 export const Editprofile = (name, about) => {
-  fetch(`${config.baseUrl}/users/me`, {
+  return fetch(`${config.baseUrl}/users/me`, {
   method: 'PATCH',
   headers: config.headers,
   body: JSON.stringify({
@@ -70,12 +61,16 @@ export const Editprofile = (name, about) => {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
-  .then (data => console.log(data))
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 
 export const addcard = (name, link) => {
-  fetch(`${config.baseUrl}/cards`, {
+  return fetch(`${config.baseUrl}/cards`, {
   method: 'POST',
   headers: config.headers,
   body: JSON.stringify({
@@ -83,17 +78,21 @@ export const addcard = (name, link) => {
     link: link
   })
   })
-  .then (res => {
+  .then(res => {
     if(res.ok) {
       return res.json()
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
-  .then (data => console.log(data))
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 export const deleteCardServ = (id) => {
-  fetch(`${config.baseUrl}/cards/${id}`, {
+  return fetch(`${config.baseUrl}/cards/${id}`, {
   method: 'DELETE',
   headers: config.headers,
   })
@@ -103,11 +102,15 @@ export const deleteCardServ = (id) => {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
-  .then (data => console.log(data))
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 export const likecard = (id, method) => {
-  fetch(`${config.baseUrl}/cards/likes/${id}`, {
+  return fetch(`${config.baseUrl}/cards/likes/${id}`, {
   method: method,
   headers: config.headers,
   })
@@ -117,11 +120,15 @@ export const likecard = (id, method) => {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
-  .then (data => console.log(data))
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 export const Editavatar = (avatar) => {
-  fetch(`${config.baseUrl}/users/me/avatar`, {
+  return fetch(`${config.baseUrl}/users/me/avatar`, {
   method: 'PATCH',
   headers: config.headers,
   body: JSON.stringify({
@@ -134,7 +141,11 @@ export const Editavatar = (avatar) => {
     }
     return Promise.reject(`Ошибка: ${res.status}`);
   })
-  .then (data => console.log(data))
+  .then(data => {
+    console.log(data)
+    return data
+  })
+  .catch(error => console.error(error))
 }
 
 
