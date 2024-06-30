@@ -1,19 +1,19 @@
-  export const showInputError = (formElement, inputElement, errorMessage) => {
+  export const showInputError = (formElement, inputElement, errorMessage, validationConfig) => {
   const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
   console.log(errorElement)
-    inputElement.classList.add('popup__input_type_error');
+    inputElement.classList.add(validationConfig.inputErrorClass);
     errorElement.textContent = errorMessage;
     // errorElement.classList.add('.popup__error_visible');
   };
   
-  export const hideInputError = (formElement, inputElement) => {
+  export const hideInputError = (formElement, inputElement, validationConfig) => {
     const errorElement = formElement.querySelector(`.${inputElement.id}-error`);
-    inputElement.classList.remove('popup__input_type_error');
+    inputElement.classList.remove(validationConfig.inputErrorClass);
     // errorElement.classList.remove('.popup__error_visible');
     errorElement.textContent = '';
   };
   
-  export const isValid = (formElement, inputElement) => {
+  export const isValid = (formElement, inputElement, validationConfig) => {
     if (inputElement.validity.patternMismatch) {
       inputElement.setCustomValidity(inputElement.dataset.errorMessage);
       } else {
@@ -21,10 +21,10 @@
     }
     if (!inputElement.validity.valid) {
       // Если поле не проходит валидацию, покажем ошибку
-      showInputError(formElement, inputElement, inputElement.validationMessage);
+      showInputError(formElement, inputElement, inputElement.validationMessage, validationConfig);
     } else {
       // Если проходит, скроем
-      hideInputError(formElement, inputElement);
+      hideInputError(formElement, inputElement, validationConfig);
     }
   };
   
@@ -34,7 +34,7 @@
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
     inputList.forEach((inputElement) => {
       inputElement.addEventListener('input', () => {
-        isValid(formElement, inputElement)
+        isValid(formElement, inputElement, validationConfig)
         toggleButtonState(inputList, buttonElement);
       });
     });
@@ -52,7 +52,7 @@
 
    const hasInvalidInput = (inputList) => {
     return inputList.some((inputElement) => {
-      return !inputElement.validity.valid;
+    return !inputElement.validity.valid;
     })
   }; 
   
@@ -73,6 +73,6 @@
     // Очистка ошибок валидации
     const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector))
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector)
-    inputList.forEach(input => hideInputError(formElement, input))
+    inputList.forEach(input => hideInputError(formElement, input, validationConfig))
     toggleButtonState(inputList, buttonElement);
   }

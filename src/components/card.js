@@ -1,4 +1,4 @@
-import {deleteCardServ, likecard} from './api';
+import {deleteCardServ, likeCard} from './api';
 export const createCard = (cardData, onDelete, onHeart, onImageClick, userId) => {
  const cardTemplate = document.querySelector('#card-template').content;
  const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
@@ -35,16 +35,18 @@ export function handleHeartClick (evt, _id) {
    method = "DELETE"
    else
    method = "PUT"
- likecard(_id, method)
+ likeCard(_id, method)
  .then((data) => {
    evt.target.classList.toggle('card__like-button_is-active')
    evt.target.parentElement.querySelector('.likes').textContent = data.likes.length
  })
+ .catch(error => console.error(error))
 }
 // @todo: Функция удаления карточки
 export function onDelete (deleteCard, cardId) {
  deleteCardServ(cardId)
    .then( () => deleteCard.remove())
+   .catch(error => console.error(error))
 }
 
 

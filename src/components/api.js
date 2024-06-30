@@ -46,7 +46,7 @@ export const cards = () => {
 
 
 
-export const Editprofile = (name, about) => {
+export const editProfile = (name, about) => {
   return fetch(`${config.baseUrl}/users/me`, {
   method: 'PATCH',
   headers: config.headers,
@@ -69,7 +69,7 @@ export const Editprofile = (name, about) => {
 }
 
 
-export const addcard = (name, link) => {
+export const addCard = (name, link) => {
   return fetch(`${config.baseUrl}/cards`, {
   method: 'POST',
   headers: config.headers,
@@ -109,7 +109,7 @@ export const deleteCardServ = (id) => {
   .catch(error => console.error(error))
 }
 
-export const likecard = (id, method) => {
+export const likeCard = (id, method) => {
   return fetch(`${config.baseUrl}/cards/likes/${id}`, {
   method: method,
   headers: config.headers,
@@ -127,7 +127,7 @@ export const likecard = (id, method) => {
   .catch(error => console.error(error))
 }
 
-export const Editavatar = (avatar) => {
+export const editAvatar = (avatar) => {
   return fetch(`${config.baseUrl}/users/me/avatar`, {
   method: 'PATCH',
   headers: config.headers,

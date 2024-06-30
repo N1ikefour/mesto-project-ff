@@ -1,9 +1,8 @@
 import './index.css';
-import {id} from './components/card'
 import { createCard, onDelete, handleHeartClick} from './components/card';
-import { closeCurrentPopupByOverlay, openPopup, closePopup} from './components/modal';
-import {showInputError, isValid, setEventListeners, enableValidation, hasInvalidInput, toggleButtonState, clearValidation} from './components/validation';
-import {cardsserv, meInfo, cards, Editprofile, addcard, Editavatar} from './components/api';
+import { openPopup, closePopup} from './components/modal';
+import { enableValidation, clearValidation} from './components/validation';
+import {meInfo, cards, editProfile, addCard, editAvatar} from './components/api';
 // import {closePopupByEsc} from './components/modal.js'
 // @todo: Темплейт карточки
 
@@ -54,27 +53,32 @@ const avatar = document.querySelector('.profile__image');
 const popupTypeNewAvatar = document.querySelector('.popup_type_new-avatar');
 
 [...document.querySelectorAll(".popup__close")].forEach(elem => elem.addEventListener("click", evt=>{
-  closePopup(evt.target.closest(".popup"), validationConfig)
+  closePopup(evt.target.closest(".popup"))
 }));
 
 [...document.querySelectorAll('.popup')].forEach(elem => elem.addEventListener("mousedown", evt => {
   if (evt.target === elem)
-    closePopup(evt.target.closest(".popup"), validationConfig)
+    closePopup(evt.target.closest(".popup"))
 }))
 
 
 avatar.addEventListener("click", () =>{
-  openPopup(popupTypeNewAvatar, validationConfig)
+  clearValidation(formElementAvatar, validationConfig)
+  formElementAvatar.reset();
+  openPopup(popupTypeNewAvatar)
 })
 
 profileEditButton.addEventListener("click", ()=>{
-  openPopup(popupTypeEdit, validationConfig);
-    nameInput.value = profileTitle.textContent;
+  nameInput.value = profileTitle.textContent;
     jobInput.value = profileDescription.textContent;
+  clearValidation(formElement, validationConfig)
+  openPopup(popupTypeEdit);
 })
 
 profileAddButton.addEventListener("click", ()=> {
-  openPopup(popupTypeNew, validationConfig)
+  clearValidation(formElementNew, validationConfig)
+  formElementNew.reset()
+  openPopup(popupTypeNew)
 
 })
  
@@ -91,7 +95,7 @@ function handleFormEditSubmit(evt) {
   const jobValue = jobInput.value
   const button = evt.target.querySelector('.button');
   button.textContent = 'Сохранение...';
-  Editprofile(nameValue, jobValue)
+  editProfile(nameValue, jobValue)
     .then(data => {
       // Выберите элементы, куда должны быть вставлены значения полей
       const profileTitle = document.querySelector('.profile__title');
@@ -102,8 +106,9 @@ function handleFormEditSubmit(evt) {
       // closeCurrentPopup()
       nameInput.value = null;
       jobInput.value = null;
-      closePopup(popupTypeEdit, validationConfig)
+      closePopup(popupTypeEdit)
     })
+    .catch(error => console.error(error))
     .finally(()=> {
       button.textContent = 'Сохранить'
     })
@@ -113,7 +118,7 @@ function handleFormEditSubmit(evt) {
 // он будет следить за событием “submit” - «отправка»
 formElement.addEventListener('submit', handleFormEditSubmit);
 formElementNew.addEventListener('submit', handleFormNewSubmit);
-formElementAvatar.addEventListener('submit', handleFormNewavatar)
+formElementAvatar.addEventListener('submit', handleFormNewAvatar)
 
 
 function handleFormNewSubmit (evt) {
@@ -130,20 +135,21 @@ function handleFormNewSubmit (evt) {
   const button = evt.target.querySelector('.button');
   button.textContent = 'Сохранение...';
 
-  addcard(name, link)
+  addCard(name, link)
     .then(data => {
         const card = createCard(data, onDelete, handleHeartClick, handleOnImageClick, userId);
         cardsContainer.insertBefore(card, cardsContainer.firstChild)
         newNameInput.value = null;
         linkInput.value = null;
-        closePopup(evt.target.closest(".popup"), validationConfig)
+        closePopup(evt.target.closest(".popup"))
     })
+    .catch(error => console.error(error))
     .finally(()=> {
       button.textContent = 'Сохранить'
     })
 }
 
-function handleFormNewavatar (evt) {
+function handleFormNewAvatar (evt) {
   evt.preventDefault();
   const linkInput = document.querySelector(".avatar_link")
   const link = linkInput.value;
@@ -152,12 +158,13 @@ function handleFormNewavatar (evt) {
   }
   const button = evt.target.querySelector('.button');
   button.textContent = 'Сохранение...';
-  Editavatar(link)
+  editAvatar(link)
     .then((data) => {
       avatar.style.backgroundImage = `url(${link})`;
       linkInput.value = null;
-      closePopup(evt.target.closest(".popup"), validationConfig)
+      closePopup(evt.target.closest(".popup"))
     })
+    .catch(error => console.error(error))
     .finally(()=> {
       button.textContent = 'Сохранить'
     })
@@ -169,7 +176,7 @@ function handleOnImageClick (link, name) {
   const imageLink = link;
   const nameCardDesc = name;
 
-  openPopup(popupTypeImage, validationConfig)
+  openPopup(popupTypeImage)
   popupTypeImageImg.src = imageLink;
   popupTypeImageP.textContent = nameCardDesc
 }
