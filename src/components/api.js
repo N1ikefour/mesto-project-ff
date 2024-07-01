@@ -24,7 +24,6 @@ export function meInfo () {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 export const cards = () => {
@@ -41,7 +40,6 @@ export const cards = () => {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 
@@ -65,7 +63,6 @@ export const editProfile = (name, about) => {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 
@@ -88,7 +85,6 @@ export const addCard = (name, link) => {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 export const deleteCardServ = (id) => {
@@ -106,7 +102,6 @@ export const deleteCardServ = (id) => {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 export const likeCard = (id, method) => {
@@ -124,7 +119,6 @@ export const likeCard = (id, method) => {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 export const editAvatar = (avatar) => {
@@ -145,7 +139,6 @@ export const editAvatar = (avatar) => {
     console.log(data)
     return data
   })
-  .catch(error => console.error(error))
 }
 
 

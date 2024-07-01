@@ -63,8 +63,8 @@ const popupTypeNewAvatar = document.querySelector('.popup_type_new-avatar');
 
 
 avatar.addEventListener("click", () =>{
-  clearValidation(formElementAvatar, validationConfig)
   formElementAvatar.reset();
+  clearValidation(formElementAvatar, validationConfig)
   openPopup(popupTypeNewAvatar)
 })
 
@@ -76,8 +76,8 @@ profileEditButton.addEventListener("click", ()=>{
 })
 
 profileAddButton.addEventListener("click", ()=> {
-  clearValidation(formElementNew, validationConfig)
   formElementNew.reset()
+  clearValidation(formElementNew, validationConfig)
   openPopup(popupTypeNew)
 
 })
